@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi sceglierai ancora?</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #fff7fb 0%, #ffeef5 100%);
+      overflow: hidden;
+      color: #3b2f36;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(92vw, 560px);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      box-shadow: 0 18px 50px rgba(196, 120, 150, 0.18);
+      padding: 28px 24px 120px;
+      text-align: center;
+      position: relative;
+    }
+
+    .puppy-image {
+      width: min(100%, 380px);
+      height: auto;
+      border-radius: 22px;
+      display: block;
+      margin: 0 auto 22px;
+      object-fit: cover;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    .buttons-layer {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+    }
+
+    .btn {
+      position: fixed;
+      top: 78%;
+      transform: translateY(-50%);
+      border: none;
+      border-radius: 999px;
+      padding: 16px 30px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, left 0.12s ease, top 0.12s ease;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+      pointer-events: auto;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #yesBtn {
+      left: calc(50% - 120px);
+      background: #ff7aa8;
+      color: white;
+    }
+
+    #yesBtn:hover {
+      transform: translateY(-50%) scale(1.05);
+      box-shadow: 0 14px 28px rgba(255, 122, 168, 0.35);
+    }
+
+    #noBtn {
+      left: calc(50% + 40px);
+      background: #ffffff;
+      color: #d14d7c;
+      border: 2px solid #f6a8c4;
+    }
+
+    #message {
+      margin-top: 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #c24575;
+      min-height: 24px;
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding-bottom: 140px;
+      }
+
+      .btn {
+        top: 84%;
+        padding: 14px 24px;
+        font-size: 1rem;
+      }
+
+      #yesBtn {
+        left: calc(50% - 105px);
+      }
+
+      #noBtn {
+        left: calc(50% + 20px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card">
+      <img
+        class="puppy-image"
+        src="[images.unsplash.com](https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=900&q=80)"
+        alt="Cucciolo di cane carino e adorabile"
+      />
+      <h1>Mi sceglierai ancora di giorno in giorno?</h1>
+      <div id="message"></div>
+    </section>
+  </main>
+
+  <div class="buttons-layer">
+    <button id="yesBtn" class="btn">Si</button>
+    <button id="noBtn" class="btn">No</button>
+  </div>
+
+  <script>
+    const noBtn = document.getElementById("noBtn");
+    const yesBtn = document.getElementById("yesBtn");
+    const message = document.getElementById("message");
+
+    const minDistance = 15;
+    const triggerDistance = 140;
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function getButtonCenter(rect) {
+      return {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2
+      };
+    }
+
+    document.addEventListener("mousemove", (event) => {
+      const rect = noBtn.getBoundingClientRect();
+      const center = getButtonCenter(rect);
+
+      const dx = center.x - event.clientX;
+      const dy = center.y - event.clientY;
+      const distance = Math.hypot(dx, dy);
+
+      if (distance < triggerDistance) {
+        let moveX;
+        let moveY;
+
+        if (distance === 0) {
+          moveX = minDistance;
+          moveY = minDistance;
+        } else {
+          const escapeDistance = (triggerDistance - distance) + minDistance;
+          moveX = (dx / distance) * escapeDistance;
+          moveY = (dy / distance) * escapeDistance;
+        }
+
+        const newLeft = clamp(
+          rect.left + moveX,
+          0,
+          window.innerWidth - rect.width
+        );
+
+        const newTop = clamp(
+          rect.top + moveY,
+          0,
+          window.innerHeight - rect.height
+        );
+
+        noBtn.style.left = `${newLeft}px`;
+        noBtn.style.top = `${newTop}px`;
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      message.textContent = "Lo sapevo. ❤️";
+    });
+  </script>
+</body>
+</html>
